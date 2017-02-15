@@ -25,6 +25,13 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer{
         this.mContext=mContext;
     }
 
+
+
+    public void updateListView(List<TruckerModel> list) {
+        this.truckerModels = list;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         return truckerModels.size();

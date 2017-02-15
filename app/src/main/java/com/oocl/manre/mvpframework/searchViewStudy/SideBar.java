@@ -14,6 +14,7 @@ import android.view.View;
 
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -26,6 +27,10 @@ import java.util.Set;
  */
 
 public class SideBar extends View {
+
+    public static String[] INDEX_STRING = {"A", "B", "C", "D", "E", "F", "G", "H", "I",
+            "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+            "W", "X", "Y", "Z"};
 
     private Paint paint = new Paint();
     private OnTouchLetterChangeListenner listenner;
@@ -43,6 +48,15 @@ public class SideBar extends View {
 
     public SideBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public SideBar(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init();
+    }
+
+    private void init() {
+        letters = Arrays.asList(INDEX_STRING);
     }
 
     @Override
@@ -156,8 +170,12 @@ public class SideBar extends View {
         }
         Comparator<Object> cmp= Collator.getInstance(Locale.ENGLISH);
         Collections.sort(this.letters,cmp);
+        invalidate();
     }
-
+    public void setIndexText(ArrayList<String> indexStrings) {
+        this.letters = indexStrings;
+        invalidate();
+    }
     /**
      * SlideBar 的监听器接口
      *

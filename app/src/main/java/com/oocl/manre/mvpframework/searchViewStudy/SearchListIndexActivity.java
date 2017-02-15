@@ -2,6 +2,7 @@ package com.oocl.manre.mvpframework.searchViewStudy;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -17,9 +18,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class SearchListIndexActivity extends AppCompatActivity implements SearchView.SearchViewListener{
@@ -47,6 +52,8 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         truckerFilterModels=new ArrayList<>();
         truckerFilterModels=deepCopyList(truckerModels);
         searchView= (SearchView) findViewById(R.id.main_search_layout);
+
+        
         sortAdapter = new SortAdapter(this,truckerFilterModels);
         sortListView.setAdapter(sortAdapter);
         searchView.setSearchViewListener(this);
@@ -122,11 +129,30 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
             }
         }
     }
+    private void filterData(String filterStr) {
+        List<TruckerModel> mSortList = new ArrayList<>();
+        if (TextUtils.isEmpty(filterStr)) {
+            mSortList = truckerModels;
+        } else {
+            mSortList.clear();
+            for (TruckerModel sortModel : truckerModels) {
+                String name = sortModel.getName();
+                if (name.toUpperCase().indexOf(filterStr.toString().toUpperCase()) != -1 ) {
+                    mSortList.add(sortModel);
+                }
+            }
+        }
+        // 根据a-z进行排序
+        Comparator<Object> cmp= Collator.getInstance(Locale.ENGLISH);
+        Collections.sort(mSortList, cmp);
+        sortAdapter.updateListView(mSortList);
+    }
 
     @Override
     public void onSearch(String text) {
         //更新result数据
-        getResultData(text);
+        filterData(text);
+        //getResultData(text);
         //lvResults.setVisibility(View.VISIBLE);
         //第一次获取结果 还未配置适配器
         if (sortListView.getAdapter() == null) {
@@ -138,6 +164,33 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         }
         Toast.makeText(this, "完成搜素", Toast.LENGTH_SHORT).show();
     }
+
+    private List<TruckerModel> filledData(String[] date) {
+        List<TruckerModel> mSortList = new ArrayList<>();
+        ArrayList<String> indexString = new ArrayList<>();
+
+        for (int i = 0; i < date.length; i++) {
+            TruckerModel sortModel = new TruckerModel();
+            sortModel.setName(date[i]);
+
+            String sortString = date[i].substring(0, 1).toUpperCase();
+            if (sortString.matches("[A-Z]")) {
+                sortModel.setSortLetters(sortString.toUpperCase());
+                if (!indexString.contains(sortString)) {
+                    indexString.add(sortString);
+                }
+            }
+            mSortList.add(sortModel);
+        }
+        Collections.sort(indexString);
+        sideBar.setIndexText(indexString);
+        return mSortList;
+    }
+
+
+
+
+
     public static <T> List<T> deepCopyList(List<T> src)
     {
 
