@@ -12,6 +12,11 @@ import android.widget.Toast;
 
 import com.oocl.manre.mvpframework.R;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +42,8 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         setContentView(R.layout.activity_search_list_index);
         sortListView= (ListView) findViewById(R.id.informationList);
         truckerModels=getTruckerModelList();
-        truckerFilterModels=truckerModels;
+        truckerFilterModels=new ArrayList<>();
+        truckerFilterModels=deepCopyList(truckerModels);
         searchView= (SearchView) findViewById(R.id.main_search_layout);
         sortAdapter = new SortAdapter(this,truckerFilterModels);
         sortListView.setAdapter(sortAdapter);
@@ -79,17 +85,20 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
 
     private void getResultData(String text)
     {
-        if(truckerFilterModels==null)
+        if(text==null||text.isEmpty())
         {
-            truckerFilterModels=new ArrayList<TruckerModel>();
-        }else{
-            truckerFilterModels.clear();
-        }
-        for (TruckerModel truckerModel:truckerModels) {
-            String name=truckerModel.getName();
-            if(name.contains(text.trim()))
-            {
-                truckerFilterModels.add(truckerModel);
+            truckerFilterModels=deepCopyList(truckerModels);
+        }else {
+            if (truckerFilterModels == null) {
+                truckerFilterModels = new ArrayList<TruckerModel>();
+            } else {
+                truckerFilterModels.clear();
+            }
+            for (TruckerModel truckerModel : truckerModels) {
+                String name = truckerModel.getName().toUpperCase();
+                if (name.contains(text.trim().toUpperCase())) {
+                    truckerFilterModels.add(truckerModel);
+                }
             }
         }
     }
@@ -108,5 +117,30 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
             sortAdapter.notifyDataSetChanged();
         }
         Toast.makeText(this, "完成搜素", Toast.LENGTH_SHORT).show();
+    }
+    public static <T> List<T> deepCopyList(List<T> src)
+    {
+
+        try
+        {
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(byteOut);
+            out.writeObject(src);
+
+            ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+            ObjectInputStream in = new ObjectInputStream(byteIn);
+            @SuppressWarnings("unchecked")
+            List<T> dest = (List<T>) in.readObject();
+            return dest;
+        }
+        catch (IOException e)
+        {
+             e.printStackTrace();
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+       return src;
     }
 }

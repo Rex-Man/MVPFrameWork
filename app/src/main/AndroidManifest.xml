@@ -11,7 +11,7 @@
         <activity android:name=".MainActivity">
 
         </activity>
-        <activity android:name=".searchViewStudy.SearchListIndexActivity">
+        <activity android:name=".searchViewStudy.SearchListIndexActivity" android:windowSoftInputMode="adjustPan|stateHidden">>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

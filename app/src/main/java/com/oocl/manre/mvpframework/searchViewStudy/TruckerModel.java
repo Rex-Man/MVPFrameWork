@@ -1,10 +1,12 @@
 package com.oocl.manre.mvpframework.searchViewStudy;
 
+import java.io.Serializable;
+
 /**
  * Created by manre on 2/13/17.
  */
 
-public class TruckerModel {
+public class TruckerModel implements Serializable {
     private String name;
     private String sortLetters;
 
