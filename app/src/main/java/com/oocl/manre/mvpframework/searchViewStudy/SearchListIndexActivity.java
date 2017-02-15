@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SearchListIndexActivity extends AppCompatActivity implements SearchView.SearchViewListener{
 
@@ -49,6 +51,8 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         sortListView.setAdapter(sortAdapter);
         searchView.setSearchViewListener(this);
         sideBar=(SideBar)findViewById(R.id.slideBar);
+
+        sideBar.setLetters(getLetters(truckerFilterModels));
         float_letter= (TextView) findViewById(R.id.float_letter);
         sideBar.setOnTouchLetterChangeListenner(new SideBar.OnTouchLetterChangeListenner() {
 
@@ -69,11 +73,27 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         });
     }
 
+
+    private Set<String> getLetters(List<TruckerModel> truckerModelsLetter){
+        Set<String> letters=new HashSet<>();
+        letters.add("#");
+        for(TruckerModel truckerModel:truckerModelsLetter)
+        {
+            if(truckerModel.getName()!=null) {
+                letters.add(String.valueOf(truckerModel.getName().charAt(0)).toUpperCase());
+            }
+        }
+        return letters;
+
+    }
+
+
     protected List<TruckerModel> getTruckerModelList(){
 
         List<TruckerModel> truckerModelList=new ArrayList<TruckerModel>();
 
-           String[] letters={"A","B","C","D","E","F","G","H","I","G","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+         //  String[] letters={"A","B","C","D","E","F","G","H","I","G","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+        String[] letters={"A","B","C","D","E","F","G","H","V","W","X","Y","Z"};
         for (String letter:letters) {
             TruckerModel truckerModel=new TruckerModel();
             truckerModel.setName(letter+" trucker ");

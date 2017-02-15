@@ -6,13 +6,19 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import android.view.View;
-import android.widget.TextView;
 
+
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 
 /**
@@ -28,9 +34,7 @@ public class SideBar extends View {
     // 选中的项
     private int choose = -1;
     // 准备好的A~Z的字母数组
-    public static String[] letters = { "#", "A", "B", "C", "D", "E", "F", "G",
-            "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-            "U", "V", "W", "X", "Y", "Z" };
+    public static List<String> letters ;
 
     // 构造方法
     public SideBar(Context context) {
@@ -46,15 +50,16 @@ public class SideBar extends View {
         super.onDraw(canvas);
         // 获取宽和高
         int width = getWidth();
-        int height = getHeight();
+        //int height = getHeight();
+        int height= getScreamHeight();
         // 每个字母的高度
-        int singleHeight = height / letters.length;
+        int singleHeight = height / letters.size();
         if (showBg) {
             // 画出背景
             canvas.drawColor(Color.parseColor("#55000000"));
         }
         // 画字母
-        for (int i = 0; i < letters.length; i++) {
+        for (int i = 0; i < letters.size(); i++) {
             paint.setColor(Color.BLACK);
             // 设置字体格式
             paint.setTypeface(Typeface.DEFAULT_BOLD);
@@ -66,15 +71,24 @@ public class SideBar extends View {
                 paint.setFakeBoldText(true);
             }
             // 要画的字母的x,y坐标
-            float posX = width / 2 - paint.measureText(letters[i]) / 2;
-            float posY = i * singleHeight + singleHeight;
+            float posX = width / 2 - paint.measureText(letters.get(i)) / 2;
+            float posY = i * singleHeight + singleHeight+getMarginTop();
             // 画出字母
-            canvas.drawText(letters[i], posX, posY, paint);
+            canvas.drawText(letters.get(i), posX, posY, paint);
             // 重新设置画笔
             paint.reset();
         }
     }
 
+    private int getMarginTop()
+    {
+        return (getHeight()-getScreamHeight())/2;
+    }
+
+    private int getScreamHeight()
+    {
+        return (int) (25f*letters.size());
+    }
     /**
      * 处理SlideBar的状态
      */
@@ -82,25 +96,26 @@ public class SideBar extends View {
     public boolean dispatchTouchEvent(MotionEvent event) {
         final float y = event.getY();
         // 算出点击的字母的索引
-        final int index = (int) (y / getHeight() * letters.length);
+        //final int index = (int) (y / getScreamHeight() * letters.size());
+        final int index=(int)((y-getMarginTop())/25f);
         // 保存上次点击的字母的索引到oldChoose
         final int oldChoose = choose;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 showBg = true;
                 if (oldChoose != index && listenner != null && index > 0
-                        && index < letters.length) {
+                        && index < letters.size()) {
                     choose = index;
-                    listenner.onTouchLetterChange(showBg, letters[index]);
+                    listenner.onTouchLetterChange(showBg, letters.get(index));
                     invalidate();
                 }
                 break;
 
             case MotionEvent.ACTION_MOVE:
                 if (oldChoose != index && listenner != null && index > 0
-                        && index < letters.length) {
+                        && index < letters.size()) {
                     choose = index;
-                    listenner.onTouchLetterChange(showBg, letters[index]);
+                    listenner.onTouchLetterChange(showBg, letters.get(index));
                     invalidate();
                 }
                 break;
@@ -110,9 +125,9 @@ public class SideBar extends View {
                 if (listenner != null) {
                     if (index <= 0) {
                         listenner.onTouchLetterChange(showBg, "A");
-                    } else if (index > 0 && index < letters.length) {
-                        listenner.onTouchLetterChange(showBg, letters[index]);
-                    } else if (index >= letters.length) {
+                    } else if (index > 0 && index < letters.size()) {
+                        listenner.onTouchLetterChange(showBg, letters.get(index));
+                    } else if (index >= letters.size()) {
                         listenner.onTouchLetterChange(showBg, "Z");
                     }
                 }
@@ -130,6 +145,17 @@ public class SideBar extends View {
     public void setOnTouchLetterChangeListenner(
             OnTouchLetterChangeListenner listenner) {
         this.listenner = listenner;
+    }
+
+    public void setLetters(Set<String> letters)
+    {
+        this.letters=new ArrayList<>();
+        for (String letter:letters
+             ) {
+            this.letters.add(letter.toUpperCase());
+        }
+        Comparator<Object> cmp= Collator.getInstance(Locale.ENGLISH);
+        Collections.sort(this.letters,cmp);
     }
 
     /**
