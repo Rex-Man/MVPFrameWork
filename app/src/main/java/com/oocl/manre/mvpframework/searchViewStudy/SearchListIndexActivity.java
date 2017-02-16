@@ -1,5 +1,8 @@
 package com.oocl.manre.mvpframework.searchViewStudy;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -7,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,7 +57,7 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         truckerFilterModels=deepCopyList(truckerModels);
         searchView= (SearchView) findViewById(R.id.main_search_layout);
 
-        
+
         sortAdapter = new SortAdapter(this,truckerFilterModels);
         sortListView.setAdapter(sortAdapter);
         searchView.setSearchViewListener(this);
@@ -93,6 +97,33 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         return letters;
 
     }
+
+    private void showAddAlertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("登录");
+        //通过布局填充器获login_layout
+        View view = getLayoutInflater().inflate(R.layout.add_item,null);
+        //获取两个文本编辑框（密码这里不做登陆实现，仅演示）
+        final EditText truckerName = (EditText) view.findViewById(R.id.truckerwarehousename);
+        builder.setView(view);
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub
+                    }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub
+                    }
+                }).create();
+        builder.show();
+    }
+
+
+
+
+
 
 
     protected List<TruckerModel> getTruckerModelList(){
@@ -146,6 +177,11 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         Comparator<Object> cmp= Collator.getInstance(Locale.ENGLISH);
         Collections.sort(mSortList, cmp);
         sortAdapter.updateListView(mSortList);
+    }
+
+    @Override
+    public void onAdd() {
+        showAddAlertDialog();
     }
 
     @Override
