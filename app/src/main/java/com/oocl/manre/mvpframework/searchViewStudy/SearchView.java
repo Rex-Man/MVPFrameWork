@@ -116,10 +116,10 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
             if (!"".equals(charSequence.toString())) {
                 ivDelete.setVisibility(VISIBLE);
-                notifyStartSearching(etInput.getText().toString());
             } else {
                 ivDelete.setVisibility(GONE);
             }
+            notifyStartSearching(etInput.getText().toString());
         }
 
         @Override

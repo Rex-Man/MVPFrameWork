@@ -48,9 +48,9 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer{
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int position, View view, ViewGroup viewGroup) {
         ViewHolder viewHolder=null;
-        final TruckerModel truckerModel=truckerModels.get(i);
+        final TruckerModel truckerModel=truckerModels.get(position);
         if(view==null)
         {
             viewHolder=new ViewHolder();
@@ -62,10 +62,16 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer{
             viewHolder=(ViewHolder) view.getTag();
         }
 
+        int section = getSectionForPosition(position);
 
-        //viewHolder.tvCategoryname.setVisibility(View.VISIBLE);
-        viewHolder.tvCategoryname.setText(truckerModel.getSortLetters());
-        viewHolder.tvTruckerNameShow.setText(truckerModels.get(i).getName());
+        if (position == getPositionForSection(section)) {
+            viewHolder.tvCategoryname.setVisibility(View.VISIBLE);
+            viewHolder.tvCategoryname.setText(truckerModel.getSortLetters());
+        } else {
+            viewHolder.tvCategoryname.setVisibility(View.GONE);
+        }
+
+        viewHolder.tvTruckerNameShow.setText(truckerModels.get(position).getName());
         return view;
     }
 

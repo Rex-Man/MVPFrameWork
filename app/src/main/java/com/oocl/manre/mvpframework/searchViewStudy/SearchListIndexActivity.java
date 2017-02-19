@@ -56,14 +56,12 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
         truckerFilterModels=new ArrayList<>();
         truckerFilterModels=deepCopyList(truckerModels);
         searchView= (SearchView) findViewById(R.id.main_search_layout);
-
-
-        sortAdapter = new SortAdapter(this,truckerFilterModels);
+        sortAdapter = new SortAdapter(this,truckerModels);
         sortListView.setAdapter(sortAdapter);
         searchView.setSearchViewListener(this);
         sideBar=(SideBar)findViewById(R.id.slideBar);
 
-        sideBar.setLetters(getLetters(truckerFilterModels));
+        sideBar.setLetters(getLetters(truckerModels));
         float_letter= (TextView) findViewById(R.id.float_letter);
         sideBar.setOnTouchLetterChangeListenner(new SideBar.OnTouchLetterChangeListenner() {
 
@@ -130,13 +128,17 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
 
         List<TruckerModel> truckerModelList=new ArrayList<TruckerModel>();
 
-         //  String[] letters={"A","B","C","D","E","F","G","H","I","G","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
-        String[] letters={"A","B","C","D","E","F","G","H","V","W","X","Y","Z"};
+           String[] letters={"A","B","C","D","E","F","G","H","I","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+        //String[] letters={"A","B","C","D","E","F","G","H","V","W","X","Y","Z"};
         for (String letter:letters) {
             TruckerModel truckerModel=new TruckerModel();
             truckerModel.setName(letter+" trucker ");
             truckerModel.setSortLetters(letter);
             truckerModelList.add(truckerModel);
+            TruckerModel truckerModel1=new TruckerModel();
+            truckerModel1.setName(letter+" New trucker ");
+            truckerModel1.setSortLetters(letter);
+            truckerModelList.add(truckerModel1);
         }
         return truckerModelList;
     }
@@ -163,7 +165,8 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
     private void filterData(String filterStr) {
         List<TruckerModel> mSortList = new ArrayList<>();
         if (TextUtils.isEmpty(filterStr)) {
-            mSortList = truckerModels;
+
+            mSortList = truckerFilterModels;
         } else {
             mSortList.clear();
             for (TruckerModel sortModel : truckerModels) {
@@ -173,9 +176,9 @@ public class SearchListIndexActivity extends AppCompatActivity implements Search
                 }
             }
         }
-        // 根据a-z进行排序
-        Comparator<Object> cmp= Collator.getInstance(Locale.ENGLISH);
-        Collections.sort(mSortList, cmp);
+
+
+        Collections.sort(mSortList);
         sortAdapter.updateListView(mSortList);
     }
 
